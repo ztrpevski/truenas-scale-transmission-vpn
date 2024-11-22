@@ -22,4 +22,4 @@ transmission-daemon --foreground --config-dir /etc/transmission-daemon' > /etc/s
 EXPOSE 9091 51413
 
 # Start Gluetun and Transmission
-#CMD ["/etc/start-transmission.sh"]
+CMD ["transmission-daemon --foreground --config-dir /etc/transmission-daemon "]
