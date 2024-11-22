@@ -1,7 +1,7 @@
 # truenas-scale-transmission-vpn
 
 # Set environment variables for Surfshark VPN with WireGuard
-ENV VPNSP="surfshark"
+ENV VPN_SERVICE_PROVIDER="surfshark"
 
 ENV WIREGUARD_PRIVATE_KEY="your_wireguard_private_key"
 
