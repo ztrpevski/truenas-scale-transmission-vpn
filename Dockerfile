@@ -2,7 +2,7 @@
 FROM qmcgaw/gluetun:latest
 
 # Set environment variables for Surfshark VPN with WireGuard
-ENV VPNSP="surfshark"
+ENV VPN_SERVICE_PROVIDER="surfshark"
 ENV WIREGUARD_PRIVATE_KEY="your_wireguard_private_key"
 ENV WIREGUARD_ADDRESSES="your_wireguard_addresses"
 ENV WIREGUARD_ENDPOINT="your_wireguard_endpoint"
