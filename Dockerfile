@@ -15,8 +15,8 @@ COPY settings.json /etc/transmission-daemon/settings.json
 
 # Create a script to start Transmission
 RUN echo '#!/bin/sh\n\
-transmission-daemon --foreground --config-dir /etc/transmission-daemon' > /start-transmission.sh \
-    && chmod +x /start-transmission.sh
+transmission-daemon --foreground --config-dir /etc/transmission-daemon' > /etc/start-transmission.sh \
+    && chmod +x /etc/start-transmission.sh
 
 # Expose Transmission ports
 EXPOSE 9091 51413
