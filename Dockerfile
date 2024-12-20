@@ -19,4 +19,4 @@ RUN chmod +x start-transmission.sh
 EXPOSE 9091 51413
 
 # Start Gluetun and Transmission
-ENTRYPOINT ["./start-transmission.sh"]
+ENTRYPOINT ["start-transmission.sh"]
