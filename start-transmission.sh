@@ -6,7 +6,7 @@ CONFIG_FILE="$CONFIG_DIR/settings.json"
 echo "Starting Transmission..."
 
 # Start transmission daemon in the background
-transmission-daemon \
+nohup transmission-daemon \
     --config-dir "$CONFIG_DIR" \
     --foreground &
 
