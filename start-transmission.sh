@@ -1,6 +1,14 @@
 #!/bin/sh
 
+CONFIG_DIR="/etc/transmission-daemon"
+CONFIG_FILE="$CONFIG_DIR/settings.json"
+
 echo "Starting Transmission..."
-exec transmission-daemon \
-    --config-dir /etc/transmission-daemon \
-    --foreground
+
+# Start transmission daemon in the background
+transmission-daemon \
+    --config-dir "$CONFIG_DIR" \
+    --foreground &
+
+# Continue with other tasks, or exit the script
+echo "Transmission started in the background."
