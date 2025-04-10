@@ -1,2 +1,6 @@
 #!/bin/sh
-transmission-daemon --foreground --config-dir /etc/transmission-daemon &
+
+echo "Starting Transmission..."
+exec transmission-daemon \
+    --config-dir /etc/transmission-daemon \
+    --foreground
