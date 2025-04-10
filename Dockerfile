@@ -7,6 +7,7 @@ ENV VPN_TYPE="wireguard"
 ENV SERVER_COUNTRIES="Netherlands"
 ENV WIREGUARD_PRIVATE_KEY="your_wireguard_private_key"
 
+RUN apk add --no-cache bash
 # Install Transmission
 RUN apk update && apk add --no-cache transmission-daemon
 
@@ -19,4 +20,4 @@ RUN chmod +x start-transmission.sh
 EXPOSE 9091 51413
 
 # Start Gluetun and Transmission
-CMD ["/bin/ash", "./start-transmission.sh"]
+CMD ["/bin/bash", "./start-transmission.sh"]
