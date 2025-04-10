@@ -5,10 +5,16 @@ CONFIG_FILE="$CONFIG_DIR/settings.json"
 
 echo "Starting Transmission..."
 
-# Start transmission daemon in the background
-nohup transmission-daemon \
-    --config-dir "$CONFIG_DIR" \
-    --foreground &
+# Optional: Create config if missing
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "Creating default config..."
+    transmission-daemon --config-dir "$CONFIG_DIR" --foreground &
+    sleep 5
+    killall transmission-daemon
+    sleep 1
+fi
 
-# Continue with other tasks, or exit the script
-echo "Transmission started in the background."
+# Start in foreground, let it block
+exec transmission-daemon \
+    --config-dir "$CONFIG_DIR" \
+    --foreground
