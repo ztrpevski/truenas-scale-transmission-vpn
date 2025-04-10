@@ -23,5 +23,5 @@ EXPOSE 9091 51413
 WORKDIR /
 
 # Use ENTRYPOINT instead of CMD
-ENTRYPOINT ["/start-transmission.sh"]
+ENTRYPOINT ["/start-transmission.sh &"]
 
