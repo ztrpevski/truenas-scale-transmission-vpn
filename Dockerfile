@@ -19,6 +19,9 @@ RUN chmod +x start-transmission.sh
 # Expose Transmission ports
 EXPOSE 9091 51413
 
-# Start Gluetun and Transmission
-CMD ["sh", "./start-transmission.sh"]
+# Set working directory
+WORKDIR /
+
+# Use ENTRYPOINT instead of CMD
+ENTRYPOINT ["/start-transmission.sh"]
 
