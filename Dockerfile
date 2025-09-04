@@ -1,27 +1,29 @@
-# Use the Gluetun image as the base image
+# Base: Gluetun (qmcgaw/gluetun)
 FROM qmcgaw/gluetun:latest
 
-# Set environment variables for Surfshark VPN with WireGuard
-ENV VPN_SERVICE_PROVIDER="protonvpn"
-ENV VPN_TYPE="wireguard"
-ENV SERVER_COUNTRIES="Netherlands"
-ENV WIREGUARD_PRIVATE_KEY="your_wireguard_private_key"
+# Install Transmission and utilities
+RUN apk add --no-cache transmission-daemon transmission-cli supervisor curl jq
 
-RUN apk add --no-cache bash
-# Install Transmission
-RUN apk update && apk add --no-cache transmission-daemon
+# Create config directories
+RUN mkdir -p /config/transmission /downloads /watch /scripts
 
-# Copy Transmission configuration file (optional, replace with your specific configuration file)
-COPY settings.json /etc/transmission-daemon/settings.json
-COPY start-transmission.sh start-transmission.sh
-RUN chmod +x start-transmission.sh
 
-# Expose Transmission ports
-EXPOSE 9091 51413
+# Copy sync script
+COPY sync-port.sh /scripts/sync-port.sh
+RUN chmod +x /scripts/sync-port.sh
+COPY settings.json ./config/transmission/settings.json
 
-# Set working directory
-WORKDIR /
+# Expose Transmission web UI
+EXPOSE 9091
 
-# Use ENTRYPOINT instead of CMD
-ENTRYPOINT ["/start-transmission.sh"]
+# Volumes for persistence
+VOLUME /config /downloads /watch
+
+# Supervisor config
+RUN printf "[supervisord]\nnodaemon=true\n\n" > /etc/supervisord.conf && \
+    printf "[program:gluetun]\ncommand=/gluetun\npriority=1\nautostart=true\nautorestart=true\n\n" >> /etc/supervisord.conf && \
+    printf "[program:sync-port]\ncommand=/scripts/sync-port.sh\npriority=2\nautostart=true\nautorestart=true\n\n" >> /etc/supervisord.conf
+
+ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+
 
