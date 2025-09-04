@@ -1,23 +1,21 @@
 FROM qmcgaw/gluetun:latest
 
-# Install Transmission and tools
 USER root
-RUN apk add --no-cache transmission-daemon transmission-cli curl jq bash  supervisor
+
+# Install Transmission and required tools
+RUN apk add --no-cache \
+    transmission-daemon transmission-cli \
+    curl jq bash
 
 # Create directories
 RUN mkdir -p /config /watch
 
-# Copy settings.json
+# Copy configuration and scripts
 COPY settings.json /config/settings.json
-
-# Copy sync script
 COPY sync-port.sh /usr/local/bin/sync-port.sh
-RUN chmod +x /usr/local/bin/sync-port.sh
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/sync-port.sh /usr/local/bin/entrypoint.sh
 
-# Copy supervisord config to run both processes
-COPY supervisord.conf /etc/supervisord.conf
-
-# Expose Transmission Web UI
 EXPOSE 9091
 
-CMD ./usr/bin/supervisord -c /etc/supervisord.conf
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
