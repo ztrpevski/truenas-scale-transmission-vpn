@@ -1,6 +1,6 @@
-FROM linuxserver/transmission:latest
+FROM qmcgaw/gluetun:latest
 
-RUN apk add --no-cache curl jq bash
+RUN  apk add --no-cache transmission-daemon curl jq bash
 
 
 # Copy settings.json and sync-port.sh
