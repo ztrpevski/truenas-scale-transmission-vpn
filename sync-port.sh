@@ -1,19 +1,18 @@
-#!/bin/sh
+#!/bin/bash
 set -e
-
-RPC_HOST=localhost
-RPC_PORT=9091
-RPC_USER=${TRANSMISSION_USER:-""}
-RPC_PASS=${TRANSMISSION_PASS:-""}
 
 CONF_DIR=/config/transmission
 SETTINGS_JSON="$CONF_DIR/settings.json"
+RPC_USER=${TRANSMISSION_USER:-transmission}
+RPC_PASS=${TRANSMISSION_PASS:-pwd}
 
+# Wait until Gluetun container has assigned a forwarded port
 wait_for_port() {
     while true; do
-        PORT=$(curl -s http://localhost:8000/v1/openvpn/portforwarded | jq -r '.port')
+        # Gluetun exposes forwarded port via its API
+        PORT=$(curl -s http://gluetun:8000/v1/openvpn/portforwarded | jq -r '.port')
         if [ -n "$PORT" ] && [ "$PORT" != "null" ]; then
-            echo "Got forwarded port: $PORT"
+            echo "Forwarded port from VPN: $PORT"
             echo $PORT
             return
         else
@@ -23,47 +22,41 @@ wait_for_port() {
     done
 }
 
-# Wait until Gluetun provides a port
 FORWARDED_PORT=$(wait_for_port)
 
-# Update settings.json peer-port before starting Transmission
+# Patch settings.json with the forwarded port
 if [ -f "$SETTINGS_JSON" ]; then
-    echo "Patching $SETTINGS_JSON with peer-port $FORWARDED_PORT"
-    # Use jq to safely update JSON
+    echo "Updating peer-port in settings.json to $FORWARDED_PORT"
     tmpfile=$(mktemp)
     jq --argjson port "$FORWARDED_PORT" '.["peer-port"]=$port' "$SETTINGS_JSON" > "$tmpfile" && mv "$tmpfile" "$SETTINGS_JSON"
 else
-    echo "No settings.json found at $SETTINGS_JSON, creating a minimal one"
+    echo "No settings.json found, creating minimal one"
     echo "{ \"peer-port\": $FORWARDED_PORT }" > "$SETTINGS_JSON"
 fi
 
-# Start Transmission with the updated config
-echo "Starting Transmission on port $FORWARDED_PORT"
-transmission-daemon \
-    --foreground \
-    --config-dir "$CONF_DIR" \
-    --download-dir /downloads \
-    --watch-dir /watch &
+# Start Transmission
+echo "Starting Transmission with peer-port $FORWARDED_PORT"
+transmission-daemon --foreground --config-dir "$CONF_DIR" --download-dir /mnt/downloads --watch-dir /watch &
 
 TRANS_PID=$!
 
-# Keep syncing port every 5 minutes in case ProtonVPN changes it
+# Monitor Gluetun port changes every 5 min
 while kill -0 $TRANS_PID 2>/dev/null; do
-    NEW_PORT=$(curl -s http://localhost:8000/v1/openvpn/portforwarded | jq -r '.port')
-
-    if [ -n "$NEW_PORT" ] && [ "$NEW_PORT" != "null" ] && [ "$NEW_PORT" != "$FORWARDED_PORT" ]; then
+    NEW_PORT=$(curl -s http://gluetun:8000/v1/openvpn/portforwarded | jq -r '.port')
+    if [ "$NEW_PORT" != "$FORWARDED_PORT" ] && [ "$NEW_PORT" != "null" ]; then
         echo "Port changed: updating Transmission to $NEW_PORT"
-        # Update settings.json
         tmpfile=$(mktemp)
         jq --argjson port "$NEW_PORT" '.["peer-port"]=$port' "$SETTINGS_JSON" > "$tmpfile" && mv "$tmpfile" "$SETTINGS_JSON"
-        # Update live session via RPC
-        SESSION_ID=$(curl -si --anyauth --user "$RPC_USER:$RPC_PASS" "$RPC_HOST:$RPC_PORT/transmission/rpc" | sed -n 's/X-Transmission-Session-Id: //p' | tr -d '\r')
+
+        SESSION_ID=$(curl -si --anyauth --user "$RPC_USER:$RPC_PASS" "http://127.0.0.1:9091/transmission/rpc" \
+          | sed -n 's/X-Transmission-Session-Id: //p' | tr -d '\r')
+
         curl -s --anyauth --user "$RPC_USER:$RPC_PASS" \
           --header "X-Transmission-Session-Id: $SESSION_ID" \
           -d "{\"method\":\"session-set\",\"arguments\":{\"peer-port\":$NEW_PORT}}" \
-          "$RPC_HOST:$RPC_PORT/transmission/rpc" > /dev/null
+          "http://127.0.0.1:9091/transmission/rpc" > /dev/null
+
         FORWARDED_PORT=$NEW_PORT
     fi
-
     sleep 300
 done
