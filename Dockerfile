@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM qmcgaw/gluetun:latest
 
 # Install dependencies
 RUN apk add --no-cache transmission-daemon curl jq bash
