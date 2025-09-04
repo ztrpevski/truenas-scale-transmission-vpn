@@ -2,7 +2,7 @@ FROM qmcgaw/gluetun:latest
 
 # Install Transmission and tools
 USER root
-RUN apk add --no-cache transmission-daemon transmission-cli curl jq bash supervisor
+RUN apk add --no-cache transmission-daemon transmission-cli curl jq bash sh supervisor
 
 # Create directories
 RUN mkdir -p /config /watch
