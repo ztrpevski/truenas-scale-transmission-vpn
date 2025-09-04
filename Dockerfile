@@ -1,18 +1,12 @@
-FROM qmcgaw/gluetun:latest
+FROM linuxserver/transmission:latest
 
-# Install dependencies
-RUN apk add --no-cache transmission-daemon curl jq bash
-
-# Create necessary directories
-RUN mkdir -p /config/transmission /watch /scripts
-
-# Copy sync script
-COPY sync-port.sh /scripts/sync-port.sh
-RUN chmod +x /scripts/sync-port.sh
-
-# Expose web UI (optional, mapped via Gluetun port forwarding)
-EXPOSE 9091
+RUN apk add --no-cache curl jq bash
 
 
-# Entrypoint: sync port then start Transmission
-ENTRYPOINT ["/scripts/sync-port.sh"]
+# Copy settings.json and sync-port.sh
+COPY settings.json /config/settings.json
+COPY sync-port.sh /usr/local/bin/sync-port.sh
+RUN chmod +x /usr/local/bin/sync-port.sh
+
+# Use entrypoint to run your sync-port script (which waits for port and starts transmission)
+ENTRYPOINT ["/usr/local/bin/sync-port.sh"]
