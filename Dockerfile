@@ -2,7 +2,7 @@ FROM qmcgaw/gluetun:latest
 
 # Install Transmission and tools
 USER root
-RUN apk add --no-cache transmission-daemon transmission-cli curl jq bash sh supervisor
+RUN apk add --no-cache transmission-daemon transmission-cli curl jq bash  supervisor
 
 # Create directories
 RUN mkdir -p /config /watch
@@ -20,4 +20,4 @@ COPY supervisord.conf /etc/supervisord.conf
 # Expose Transmission Web UI
 EXPOSE 9091
 
-CMD /usr/bin/supervisord -c /etc/supervisord.conf
+CMD /bin/sh /usr/bin/supervisord -c /etc/supervisord.conf
