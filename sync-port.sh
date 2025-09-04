@@ -1,21 +1,19 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
-CONF_DIR="/config"
-SETTINGS_JSON="$CONF_DIR/settings.json"
-
-echo "[sync] Waiting for Gluetun forwarded port..."
+CONFIG_DIR="/config"
+SETTINGS_JSON="$CONFIG_DIR/settings.json"
 
 while true; do
   PORT=$(curl -s http://localhost:8000/v1/openvpn/portforwarded | jq -r '.port' || true)
   if [ -n "$PORT" ] && [ "$PORT" != "null" ]; then
-    echo "[sync] Got port: $PORT"
+    echo "[sync-port] Got forwarded port: $PORT"
     break
   fi
   sleep 5
 done
 
-# Patch Transmission config
+# Patch Transmission configuration
 if [ -f "$SETTINGS_JSON" ]; then
   TMP=$(mktemp)
   jq --argjson p "$PORT" '.["peer-port"]=$p' "$SETTINGS_JSON" > "$TMP" && mv "$TMP" "$SETTINGS_JSON"
