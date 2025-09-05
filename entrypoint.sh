@@ -5,7 +5,7 @@ CONFIG_DIR="/config"
 SETTINGS_JSON="$CONFIG_DIR/settings.json"
 
 echo "[entrypoint] Starting Gluetun..."
-/gluetun &   # run Gluetun binary in background
+/gluetun/gluetun &   # run Gluetun binary in background
 GLUETUN_PID=$!
 
 echo "[entrypoint] Starting Transmission..."
