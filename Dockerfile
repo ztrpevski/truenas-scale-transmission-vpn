@@ -19,4 +19,3 @@ RUN chmod +x /usr/local/bin/sync-port.sh /usr/local/bin/entrypoint.sh
 EXPOSE 9091
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD []   # important: keep CMD empty so we inherit base image defaults
