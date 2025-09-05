@@ -18,4 +18,4 @@ RUN chmod +x /usr/local/bin/sync-port.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 9091
 
-CMD  ./usr/local/bin/entrypoint.sh
+CMD  ["/bin/sh", "-c", "/usr/local/bin/entrypoint.sh"]
