@@ -5,7 +5,7 @@ CONFIG_DIR="/config"
 SETTINGS_JSON="$CONFIG_DIR/settings.json"
 
 echo "[entrypoint] Starting Gluetun..."
-/gluetun/gluetun &   # run Gluetun binary in background
+"$@" &   # this runs the *original entrypoint* (gluetun) in background
 GLUETUN_PID=$!
 
 echo "[entrypoint] Starting Transmission..."
@@ -27,7 +27,6 @@ TRANSMISSION_PID=$!
         echo "{ \"peer-port\": $PORT }" > "$SETTINGS_JSON"
       fi
 
-      # Reload Transmission with new port
       echo "[entrypoint] Updating Transmission to new port..."
       transmission-remote -p "$PORT" || echo "[entrypoint] Failed to update Transmission via RPC"
       break
@@ -36,5 +35,5 @@ TRANSMISSION_PID=$!
   done
 ) &
 
-# Wait for either process to exit
+# Wait for either Gluetun or Transmission to exit
 wait -n $GLUETUN_PID $TRANSMISSION_PID
