@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -e
 
-# CONFIG_DIR="/config"
+ CONFIG_DIR="/config"
 # SETTINGS_JSON="$CONFIG_DIR/settings.json"
 
 # echo "[entrypoint] Starting Gluetun..."
@@ -9,7 +9,7 @@
 # # GLUETUN_PID=$!
 
 # echo "[entrypoint] Starting Transmission..."
-# transmission-daemon --config-dir "$CONFIG_DIR" 
+ transmission-daemon --config-dir "$CONFIG_DIR" 
 
 # Background job: continuously check for forwarded port changes
 # (
