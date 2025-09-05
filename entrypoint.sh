@@ -9,8 +9,7 @@ echo "[entrypoint] Starting Gluetun..."
 # GLUETUN_PID=$!
 
 echo "[entrypoint] Starting Transmission..."
-transmission-daemon --config-dir "$CONFIG_DIR" &
-TRANSMISSION_PID=$!
+transmission-daemon --config-dir "$CONFIG_DIR" 
 
 # Background job: continuously check for forwarded port changes
 # (
@@ -43,4 +42,4 @@ TRANSMISSION_PID=$!
 
 # Wait for either Gluetun or Transmission to exit
 # wait -n $GLUETUN_PID $TRANSMISSION_PID
-wait -n $TRANSMISSION_PID
+# wait -n $TRANSMISSION_PID
