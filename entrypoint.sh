@@ -11,7 +11,7 @@ GLUETUN_PID=$!
 echo "[entrypoint] Starting Transmission..."
  transmission-daemon --config-dir "$CONFIG_DIR" 
 
-Background job: continuously check for forwarded port changes
+#Background job: continuously check for forwarded port changes
 (
   CURRENT_PORT=""
 
