@@ -25,7 +25,7 @@ set -e
 # fi
 
 echo "[entrypoint] Starting Transmission..."
-exec transmission-daemon --foreground --config-dir /config
+exec transmission-daemon --foreground --config-dir /config &
 echo "[entrypoint] Starting gluetin..."
 exec cd /
-exec ./gluetun-entrypoint 
+exec ./gluetun-entrypoint  &
