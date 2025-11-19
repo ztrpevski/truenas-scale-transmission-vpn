@@ -18,4 +18,4 @@ RUN chmod +x /usr/local/bin/sync-port.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 9091
 
-ENTRYPOINT  ["/usr/local/bin/entrypoint.sh && sh /gluetun-entrypoint"]
+ENTRYPOINT  ["/usr/local/bin/entrypoint.sh"]
