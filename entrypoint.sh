@@ -24,7 +24,7 @@ set -e
 #   echo "{ \"peer-port\": $PORT }" > "$SETTINGS_JSON"
 # fi
 echo "[entrypoint] Starting gluetin..."
-exec ./gluetun-entrypoint  
+exec ./gluetun-entrypoint  & transmission-daemon --foreground --config-dir /config 
 # echo "[entrypoint] Starting Transmission..."
 # exec transmission-daemon --foreground --config-dir /config 
 
